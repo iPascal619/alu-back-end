@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+import requests
+
+
 def get_employee_todo_progress(employee_id):
     base_url = "https://jsonplaceholder.typicode.com"
 
@@ -28,9 +31,16 @@ def get_employee_todo_progress(employee_id):
     for task in completed_tasks:
         print(f"\t{task['title']}")
 
-# Prompt the user for an employee ID
-employee_id = int(input("Enter the employee ID: "))
 
-# Call the function to get the employee TODO progress
-get_employee_todo_progress(employee_id)
+def main():
+    # Prompt the user for an employee ID
+    employee_id = int(input("Enter the employee ID: "))
+
+    # Call the function to get the employee TODO progress
+    get_employee_todo_progress(employee_id)
+
+
+if __name__ == "__main__":
+    main()
+
 
