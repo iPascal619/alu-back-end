@@ -1,52 +1,30 @@
 #!/usr/bin/python3
-"""
-    python script that exports data in the JSON format
-"""
+
+"""gathers data from an API"""
+
 import json
 import requests
-from sys import argv
+import sys
 
+"""a Python script to export data in the JSON format"""
 
 if __name__ == "__main__":
-    """
-        request user info by employee ID
-    """
-    request_employee = requests.get(
-        'https://jsonplaceholder.typicode.com/users/{}/'.format(argv[1]))
-    """
-        convert json to dictionary
-    """
-    user = json.loads(request_employee.text)
-    """
-        extract username
-    """
-    username = user.get("username")
+    employee_id = sys.argv[1]
+    url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
+    todo = "https://jsonplaceholder.typicode.com/todos?userId={}"
+    todo = todo.format(employee_id)
 
-    """
-        request user's TODO list
-    """
-    request_todos = requests.get(
-        'https://jsonplaceholder.typicode.com/users/{}/todos'.format(argv[1]))
-    """
-        list to store task status(completed) in dictionary format
-    """
-    tasks = []
-    """
-        convert json to list of dictionaries
-    """
-    user_todos = json.loads(request_todos.text)
-    """
-        loop through dictionary & get completed tasks
-    """
-    for dictionary in user_todos:
-        task = {}
-        task["task"] = dictionary.get("title")
-        task["completed"] = dictionary.get("completed")
-        task["username"] = username
-        tasks.append(task)
+    user_info = requests.request("GET", url).json()
+    todo_info = requests.request("GET", todo).json()
 
-    """
-        export to JSON
-    """
-    with open('{}.json'.format(argv[1]), 'w') as json_file:
-        json.dump({argv[1]: tasks}, json_file)
+    employee_username = user_info.get("username")
+
+    todos_info_sorted = [
+        dict(zip(["task", "completed", "username"],
+                 [task["title"], task["completed"], employee_username]))
+        for task in todo_info
+    ]
+
+    user_dict = {str(employee_id): todos_info_sorted}
+    with open(str(employee_id) + '.json', "w") as f:
+        f.write(json.dumps(user_dict))
