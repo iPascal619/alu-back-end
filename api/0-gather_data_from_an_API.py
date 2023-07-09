@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+import requests
+import sys
+
 
 def get_employee_todo_progress(employee_id):
     base_url = "https://jsonplaceholder.typicode.com"
@@ -31,14 +34,17 @@ def get_employee_todo_progress(employee_id):
 
 
 def main():
-    # Prompt the user for an employee ID
-    employee_id = int(input("Enter the employee ID: "))
+    if len(sys.argv) != 2:
+        print("Usage: python3 0-gather_data_from_an_API.py <employee_id>")
+        return
 
-    # Call the function to get the employee TODO progress
+    employee_id = int(sys.argv[1])
+
     get_employee_todo_progress(employee_id)
 
 
 if __name__ == "__main__":
     main()
+
 
 
