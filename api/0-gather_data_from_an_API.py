@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-import requests
-
 
 def get_employee_todo_progress(employee_id):
     base_url = "https://jsonplaceholder.typicode.com"
