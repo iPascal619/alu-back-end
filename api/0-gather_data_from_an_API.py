@@ -1,31 +1,36 @@
 #!/usr/bin/python3
-"""
-    python script that returns TODO list progress for a given employee ID
-"""
-import json
-import requests
-from sys import argv
 
+def get_employee_todo_progress(employee_id):
+    base_url = "https://jsonplaceholder.typicode.com"
 
-if __name__ == "__main__":
-    """ Functions for gathering  data from an API """
-    request_employee = requests.get(
-        'https://jsonplaceholder.typicode.com/users/{}/'.format(argv[1]))
-    employee = json.loads(request_employee.text)
-    employee_name = employee.get("name")
-    request_todos = requests.get(
-        'https://jsonplaceholder.typicode.com/users/{}/todos'.format(argv[1]))
-    tasks = {}
-    employee_todos = json.loads(request_todos.text)
+    # Get employee information
+    response = requests.get(f"{base_url}/users/{employee_id}")
+    if response.status_code != 200:
+        print(f"Failed to retrieve employee information. Error: {response.status_code}")
+        return
 
-    for dictionary in employee_todos:
-        tasks.update({dictionary.get("title"): dictionary.get("completed")})
+    employee_data = response.json()
+    employee_name = employee_data['name']
 
-    EMPLOYEE_NAME = employee_name
-    TOTAL_NUMBER_OF_TASKS = len(tasks)
-    NUMBER_OF_DONE_TASKS = len([k for k, v in tasks.items() if v is True])
-    print("Employee {} is done with tasks({}/{}):".format(
-        EMPLOYEE_NAME, NUMBER_OF_DONE_TASKS, TOTAL_NUMBER_OF_TASKS))
-    for k, v in tasks.items():
-        if v is True:
-            print("\t {}".format(k))
+    # Get employee's TODO list
+    response = requests.get(f"{base_url}/todos?userId={employee_id}")
+    if response.status_code != 200:
+        print(f"Failed to retrieve TODO list. Error: {response.status_code}")
+        return
+
+    todos = response.json()
+    total_tasks = len(todos)
+
+    # Filter completed tasks
+    completed_tasks = [todo for todo in todos if todo['completed']]
+
+    print(f"Employee {employee_name} is done with tasks ({len(completed_tasks)}/{total_tasks}):")
+    for task in completed_tasks:
+        print(f"\t{task['title']}")
+
+# Prompt the user for an employee ID
+employee_id = int(input("Enter the employee ID: "))
+
+# Call the function to get the employee TODO progress
+get_employee_todo_progress(employee_id)
+
